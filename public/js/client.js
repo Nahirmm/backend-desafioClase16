@@ -9,6 +9,8 @@ window.onload = () => {
         loadProds(listaProductos)
     })
 
+    //PRODUCTOS
+
     async function loadProds(listProd) {
         let htmlProd = ''
         const tableList = await fetch('views/partials/table.ejs').then(res => res.text())
@@ -30,6 +32,8 @@ window.onload = () => {
         }
     socket.emit("guardarNuevoProducto",nuevoProducto)
     })
+
+    //MENSAJES
 
     function loadMessages(data) {
         const html = data.map((elem, index) => {

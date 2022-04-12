@@ -1,42 +1,35 @@
-const fs = require('fs').promises
 const moment = require('moment')
+const insertMensaje = require('../../db/SQLite3/insert')
+const selectMensajes = require('../../db/SQLite3/select')
  
 class historialChat{
-   constructor(route){
-       this.route= './public/chat.txt'
-       this.message= [];
-   }
+//    constructor(route){
+//        this.message= [];
+//    }
  
+    async loadMessage(){
+        try{
+            const listaMensajes = await selectMensajes()
+            return listaMensajes
+        }catch(e){
+            //throw new Error(`Se produjo un error en loadMessage: ${e.message}`)
+            console.log(e)
+        }
+    }
+
    async saveMessage(data){
-       try{
+        try{
            const newMessage = {
                email: data.email,
                textoMensaje: data.textoMensaje,
                date: moment().format('L LTS')
            }
-           const loadedMessage = await this.loadMessage()
-           loadedMessage.push(newMessage)
-           await fs.writeFile(this.route, JSON.stringify(loadedMessage ,null, 2))
-       }catch(e){
-            throw new Error(e.message)
-           }
-       }
- 
-   async loadMessage(){
-       try{
-           const messageHistory = await fs.readFile(this.route)
-           if(messageHistory.toString() != ''){
-               this.message = JSON.parse(messageHistory)
-           }
-           return this.message
-       }catch(e){
-           if( e.code == "ENOENT"){
-                fs.writeFile(this.route,'')
-                return []
-            }
-            throw new Error(e.message)
+           await insertMensaje(newMessage)
+           return newMessage
+        }catch(e){
+            throw new Error(`Se produjo un error al guardar un nuevo mensaje: ${e.message}`)
         }
-   }
+    }
 }
  
 module.exports = historialChat
